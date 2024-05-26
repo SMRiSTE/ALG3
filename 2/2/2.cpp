@@ -13,37 +13,26 @@ void print_dynamic_array(int* arr, int logical_size, int actual_size) {
     std::cout << std::endl;
 }
 
-int* append_to_dynamic_array(int* arr, int* logical_size, int* actual_size) {
-    print_dynamic_array(arr, *logical_size, *actual_size);
-    if (*logical_size < *actual_size) {
-        *logical_size += 1;
-        int num;
-        std::cout << "Введите элемент для добавления: ";
-        std::cin >> num;
-        if (num == 0) {
-            std::exit(0);
-        }
-        arr[*logical_size - 1] = num;
-        return arr;
+void append_to_dynamic_array(int* &arr, int &logical_size, int &actual_size, int num) {
+    if (logical_size < actual_size) {
+        logical_size += 1;
+        arr[logical_size - 1] = num;
     }
-    else if (*logical_size == *actual_size) {
-        *logical_size += 1;
-        int* new_arr = new int[*actual_size * 2];
-        for (int i = 0; i < *actual_size - 1; i++) {
+    else if (logical_size == actual_size) {
+        int* new_arr = new int[2 * actual_size];
+        for (int i = 0; i < logical_size; i++) {
             new_arr[i] = arr[i];
         }
-        *actual_size *= 2;
+        new_arr[logical_size] = num;
+
+        logical_size++;
+        actual_size *= 2;
+
         delete[] arr;
         arr = new_arr;
-        int num;
-        std::cout << "Введите элемент для добавления: ";
-        std::cin >> num;
-        arr[*logical_size - 2] = num;
-        return new_arr;
     }
     else {
         std::cerr << "Ошибка: логический размер не может быть больше фактического размера!" << std::endl;
-        return arr;
     }
 }
 
@@ -73,6 +62,26 @@ int main()
         arr[i] = num;
     }
     print_dynamic_array(arr, logical_size, actual_size);
-    append_to_dynamic_array(arr, &logical_size, &actual_size);
+
+    while (true) {
+        std::cout << "Введите элемент для добавления: ";
+        std::cin >> num;
+        if (num == 0) {
+            std::cout << "Спасибо! Ваш массив: ";
+            for (int i = 0; i < actual_size; i++) {
+                if (i < logical_size) {
+                    std::cout << arr[i] << " ";
+                }
+                else {
+                    std::cout << "_ ";
+                }
+            }
+            std::exit(0);
+        }
+        else {
+            append_to_dynamic_array(arr, logical_size, actual_size, num);
+            print_dynamic_array(arr, logical_size, actual_size);
+        }
+    }
     delete[] arr;
 }
